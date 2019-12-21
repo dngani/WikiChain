@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--
+  @author: Diane Ngani
+  @timestamp: 21.12.2019 20:33
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>WikiChain from Trier</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <style>
+    .body{
+      background-color: #eee;
+    }
+    .jumbotron {
+      background-color: #f4511e; /* Orange */
+      color: #ffffff;
+    }
+
+    .requestForm {
+      border: 1px solid #ddd;
+      padding: 20px;
+      background-color:#efefef;
+    }
+
+    input[type="date"].form-control ,
+    input[type="time"].form-control ,
+    input[type="datetime-local"].form-control ,
+    input[type="month"].form-control  {
+      line-height: 24px;
+    }
+
+    .eth-label{
+      display: inline-block;
+    }
+
+  </style> 
+  </head>
+  <body>
+   <div class="container font-weight-light">
+     
+    <div id="infobar" class='text-break'>  </div>
+
+     <div class="header jumbotron row text-center bg-light text-dark"> 
+      <div class="col-xs-12 col-md-12">
+        <h1>WikiChain</h1>
+        <p>Searching for Wikipedia-Entries in Ethereum.</p>
+        <form class="search-eth form-inline" method="get" onsubmit="App.requestURL(event)">
+          <div class="form-row align-items-center mr-auto ml-auto">
+            <input id="searchUrlField"  type="search" class="form-control" placeholder="Enter the url from wikipedia ..." size="50">
+            <button type="submit" class="btn btn-info my-2 mx-auto ml-md-3">Search</button>
+          </div>            
+        </form>
+      </div>
+      <div id="warnings" class="form-inline text-center text-danger mr-auto ml-auto"></div>
+      </div> <!-- End of the header-->
+  
+
+     <!-- The search results -->
+     <div id="resquest-results" class="row">
+       <div id="eth-status-request" class="col-xs-12 col-md-12 my-2 p-2 border rounded bg-info text-white text-break"></div>
+       <div id="eth-results" class="col-md-12"></div>
+     </div>
+
+     <!-- Manual Requests to Wikipedia API -->
+     <div class="row lookups" style="margin-top: 50px !important;">
+       <div class="col-xs-12 col-md-12 text-primary">
+         <h3>Retrieving datas from Wikipedia using API calls</h3>
+       </div>
+       
+       <div class="requestForm col-xs-12 col-md-12 bg-light">
+        <form id="access-wiki-api" method="get" onsubmit="event.preventDefault();App.retrieveAndSaveRecentChanges()">
+            <div class="row">
+              <div class='col-md-6'>
+                <div class="form-group">
+                    <label>Start date</label>
+                    <div class='input-group date'>
+                        <input class="form-control" type='date'  id='queryStartdate' max=''/>
+                        <span class="input-group-addon">-</span>
+                        <input class="form-control" id="queryStarttime" type="time" name="queryStarttime" placeholder="00:00">
+                    </div>
+                    
+                </div>
+              </div>
+              <div class='col-md-6'>
+                  <div class="form-group">
+                    <label>End date</label>
+                      <div class='input-group date' >
+                          <input type='date' id='queryEnddate' name='queryEnddate' class="form-control" max=''/>
+                          <span class="input-group-addon">-</span>
+                          <input class="form-control" id="queryEndtime" type="time" name="queryEndtime">
+                      </div>
+                      
+                  </div>
+              </div>
+            </div>
+
+          <div class="row">
+            <div class="col-xs-12 col-md-4">
+              <div class="form-group">
+                <label>Limit</label>
+                <select class="form-control" id="queryLimit">
+                  <option value="5" selected="selected">5</option>
+                  <option value="10">10</option>
+                </select> 
+             </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+              <div class="form-group">
+                <label> Types of changes</label>
+                <select class="form-control" id="queryChangeTyp" >
+                  <option value="edit">Edits</option>
+                  <option value="new">New</option>
+                  <option value="edit|new" selected="selected">Edits and New</option>
+                </select> 
+             </div>
+            </div>
+            <div class="col-xs-12 col-md-4">
+              <div class="form-group">
+                <label> Namespaces</label>
+                <select class="form-control" id="queryNamespace" >
+                  <option value="0" selected="selected">0 - Articles</option>
+                  <option value="4">4 - Wikipedia</option>
+                  <option value="108">108 - Book</option>
+                  <option value="-1">-1 - Special</option>
+                  <option value="-2">-2 - Media</option>
+                </select> 
+             </div>
+            </div>
+          </div>
+
+           <button type="submit" class="btn btn-primary" form="access-wiki-api"> Submit & Save in the Blockchain </button>
+        </form>
+    </div>
+
+    <div class ='row mx-2'>
+      <div class='col-xs-12 col-md-12'><h4>We retrieved <span id='entriesCounter'>0</span> Entries.<br></h4>
+        <div>The last rccontinue is: <span id='lastRccontinue'>none</span></div>
+      </div>
+      <div id='retrieved-status' class="text-break">
+        <form class='search-eth form-inline pl-3' method='get' onsubmit='App.retrieveRecursion(event)'>
+          <button type='submit' id='retrieved-status-button' class='btn btn-secondary mx-auto' started='false'>Start the looping</button>
+        </form>
+      </div>
+      <div id='eth-status' class='col-xs-12 col-md-12 my-4 p-2 bg-dark border rounded text-white'></div>
+    </div>
+
+   <div id="lookups-results" class="row col-xs-12 col-md-12">
+     
+   </div>
+      
+    
+   </div>
+
+    </div> <!-- End of Container -->
+
+   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/truffle-contract.js"></script> <!-- enable us to access the contract abi / structure -->
+    <script src="js/bundle.js"></script> <!-- content the web3.js library, new compile and accessible with the variable Web3 -->
+    <script src="js/app.js"></script> <!-- Our main fonctionalities are implemented in this file. All requests handling and acces to the blockchain -->
+    
+  </body>
+</html>
