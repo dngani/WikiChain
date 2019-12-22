@@ -22,6 +22,7 @@ App = {
   lastRccontinue: "startrecursion",  // a mark where the query result stop. We can continue fechting up there...
   looping: false,
   revids: [],
+  retrievedUrls: [],
   counter: 0,
 
   init: async function() {
@@ -211,7 +212,7 @@ App = {
       +"<div><span class='col-4 col-md-2 eth-label'>ContractAddress:</span><span><b class='text-break'>"+outputs[article].myaddress+"</b></span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Timestamp: </span><span>"+outputs[article].lastmodified+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Pageid:</span><span>"+outputs[article].pageid+"</span></div>"
-      +"<div><span class='col-4 col-md-2 eth-label'>RevisionID:</span><span>"+outputs[article].revid+"</span></div>"
+      +"<div><span class='col-4 col-md-2 eth-label'>RevisionID:</span><span><b>"+outputs[article].revid+"<b></span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Title: </span><span>"+outputs[article].title+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Description: </span><span>"+outputs[article].description+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>URL: </span><span>"+outputs[article].url+"</span></div>"
@@ -226,10 +227,8 @@ App = {
   */
 
   retrieveAndSaveRecentChanges: async function(){
-
     // reset global variables
     App.articles = {},
-    //App.lastRccontinue = 0,  // a mark where the query result stop. We can continue fechting up there... &rccontinue=20191221065114|283358663
     App.revids = [],
     App.counter = 0;
 
@@ -263,6 +262,10 @@ App = {
       console.log(App.lastRccontinue);
       console.log(App.looping);
       return;
+    }else if(App.lastRccontinue === "startrecursion"){
+      alert("All URLs from the previous query: ",App.retrievedUrls.join('\n'));
+      console.log(App.retrievedUrls);
+      App.retrievedUrls = [];
     }
 
     console.log(App.lastRccontinue);
@@ -366,6 +369,7 @@ App = {
                 var revs = pages[pg].revisions;
                 for (var rv in revs) {
                   App.articles[revs[rv].revid].url = pages[pg].fullurl;
+                  App.retrievedUrls.push(pages[pg].fullurl);
 
                 // The descrition are available under "revs[rv].slots.main['*']"
                 // They have to be sent to IPFS
@@ -456,7 +460,7 @@ App = {
       
       var datas = [];
       for (var art in App.articles){
-      datas.push(Object.values(App.articles[art]));
+        datas.push(Object.values(App.articles[art]));
       }
 
       // "generateContracts4Articles" is a method written in our smart contract WikiChain. 
@@ -563,6 +567,8 @@ App = {
       App.looping = false;
       $('#retrieved-status-button').text("Recursion stopped");
       $('#retrieved-status-button').attr('started','false');
+
+      alert(App.retrievedUrls.join('\n'));
     }else{
       App.looping = true;
       $('#retrieved-status-button').text("Recursion started");
