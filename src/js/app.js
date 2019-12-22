@@ -209,10 +209,10 @@ App = {
     // article = ( string myaddress, uint pageid, uintrevid, string url, string title, string hash_description, string lastmodified)
       
       printOutput += "<div class='p-3 mb-2 bg-light border-bottom font-weight-light shadow'>"
-      +"<div><span class='col-4 col-md-2 eth-label'>ContractAddress:</span><span><b class='text-break'>"+outputs[article].myaddress+"</b></span></div>"
+      +"<div><span class='col-4 col-md-2 eth-label'>ContractAddress:</span><span><b class='font-weight-bold text-break'>"+outputs[article].myaddress+"</b></span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Timestamp: </span><span>"+outputs[article].lastmodified+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Pageid:</span><span>"+outputs[article].pageid+"</span></div>"
-      +"<div><span class='col-4 col-md-2 eth-label'>RevisionID:</span><span><b>"+outputs[article].revid+"<b></span></div>"
+      +"<div><span class='col-4 col-md-2 eth-label'>RevisionID:</span><span><b class='font-weight-bold'>"+outputs[article].revid+"</b></span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Title: </span><span>"+outputs[article].title+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>Description: </span><span>"+outputs[article].description+"</span></div>"
       +"<div><span class='col-4 col-md-2 eth-label'>URL: </span><span>"+outputs[article].url+"</span></div>"
