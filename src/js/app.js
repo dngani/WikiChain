@@ -463,6 +463,8 @@ App = {
         datas.push(Object.values(App.articles[art]));
       }
 
+      console.log(datas);
+      
       // "generateContracts4Articles" is a method written in our smart contract WikiChain. 
       var result = await App.wikiChainInstance.generateContracts4Articles(datas,{from: App.web3.eth.defaultAccount});
 
@@ -503,24 +505,29 @@ App = {
 
     $('#eth-status').append(receiptOutput);   
 
-    var logs = [];
-    logs = result.receipt.logs;
+    try{ 
+      var logs = [];
+      logs = result.receipt.logs;
 
-    for (var event in logs){
-      var args = logs[event].args // address of the contract, url, pagid, revid, message
+      for (var event in logs){
+        var args = logs[event].args // address of the contract, url, pagid, revid, message
 
-      var output = "<div class='bg-secondary text-white'>"+"<div><span class='col-2 eth-label'>Event:</span><span>"+logs[event].event+"</span></div>";
+        var output = "<div class='bg-secondary text-white'>"+"<div><span class='col-2 eth-label'>Event:</span><span>"+logs[event].event+"</span></div>";
 
-      if(logs[event].event == "contractAlreadyExist"){
-        output += "<div><span class='col-2 eth-label'>Message:</span><span class='warning'>"+args[4]+"</span></div>";
+        if(logs[event].event == "contractAlreadyExist"){
+          output += "<div><span class='col-2 eth-label'>Message:</span><span class='warning'>"+args[4]+"</span></div>";
+        }
+
+        output += "<div><span class='col-2 eth-label'>Address: </span><span>"+args[0]+"</span></div>"
+        +"<div><span class='col-2 eth-label'>Status:</span><span>"+logs[event].type+"</span></div>"
+        +"</div>";
+
+        $('#statusitem'+args[3]).append(output);      
+
       }
-
-      output += "<div><span class='col-2 eth-label'>Address: </span><span>"+args[0]+"</span></div>"
-      +"<div><span class='col-2 eth-label'>Status:</span><span>"+logs[event].type+"</span></div>"
-      +"</div>";
-
-      $('#statusitem'+args[3]).append(output);      
-
+    }catch(error){
+      alert("Something goes wrong on the blockchain. The receipt have an empty logs array!!!\n\nAre all Smart contracts are deployed??\n\n*** received message *** \n"+ error.message);
+      console.log("Something goes wrong on the blockchain. The receipt have an empty logs array!!!\n\n", error);
     }
 
     // If looping is activated ... send a new query an wikipedia api with the actual rccontinue
@@ -541,15 +548,21 @@ App = {
   */
   refreshInfobar:async function(){
 
-    var result = await App.wikiChainInstance.getRegisterCounter({from: App.web3.eth.defaultAccount});
-    
-    var output = "<div>We already have <b>"+result.words[0]+" smart contracts</b> under the register address: "+App.wikiChainInstance.address+"</div>"
-    +"<div>connected on the blockchain: <b>"+App.web3.currentProvider.host+"</b></div>"
-    +"<div>Using the account: <span>"+App.web3.eth.defaultAccount+"</span>"
-    +"<span> with a balance of "+ App.web3.utils.fromWei( String(await App.web3.eth.getBalance(App.web3.eth.defaultAccount)),'ether') +" ETH</span></div>";
+    try{
+      var result = await App.wikiChainInstance.getRegisterCounter({from: App.web3.eth.defaultAccount});
 
-     $('#infobar').empty();
-     $('#infobar').append(output);
+      var output = "<div>We already have <b>"+result.words[0]+" smart contracts</b> under the register address: "+App.wikiChainInstance.address+"</div>"
+      +"<div>connected on the blockchain: <b>"+App.web3.currentProvider.host+"</b></div>"
+      +"<div>Using the account: <span>"+App.web3.eth.defaultAccount+"</span>"
+      +"<span> with a balance of "+ App.web3.utils.fromWei( String(await App.web3.eth.getBalance(App.web3.eth.defaultAccount)),'ether') +" ETH</span></div>";
+
+       $('#infobar').empty();
+       $('#infobar').append(output);
+    } catch (error){
+      alert("Something goes wrong on the blockchain. The receipt have an empty logs array!!!\n\nAre all Smart contracts are deployed??\n\n*** received message *** \n"+ error.message);
+      console.log("Something goes wrong on the blockchain. The receipt have an empty logs array!!!\n\n", error);
+    }
+    
   },
 
   
