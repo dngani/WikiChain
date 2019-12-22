@@ -6,7 +6,7 @@ module.exports = function(deployer) {
 
 	deployer.then( async function (){
 
-		await deployer.deploy(wc_utilities,{overwrite: true});	// {overwrite: true} only in dev mode
+		await deployer.deploy(wc_utilities);	// {overwrite: true} only in dev mode
 		await deployer.link(wc_utilities,wc_article);
 
 		var utils = await wc_utilities.deployed();
