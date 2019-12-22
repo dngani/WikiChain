@@ -11,10 +11,10 @@ module.exports = function(deployer) {
 
 		var utils = await wc_utilities.deployed();
 
-		await deployer.deploy(wc_article, {value:300000}); // {overwrite: true} only in dev mode
+		await deployer.deploy(wc_article); // {overwrite: true} only in dev mode
 
 		await deployer.link(wc_utilities,wikichain);
 		await deployer.link(wc_article,wikichain);
-		await deployer.deploy(wikichain, {value:10000000000000000000}); // {overwrite: true} only in dev mode
+		await deployer.deploy(wikichain); // {overwrite: true} only in dev mode
 	})
 };

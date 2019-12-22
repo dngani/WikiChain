@@ -63,7 +63,7 @@ contract WikiChain{
 	        }
 	        
 	        //A new contract is generated for every single tuple. We need to sent some Gas for the writing operation in the contract storage.
-	        tmp = (new WikiChainArticle).value(30000000)();
+	        tmp = new WikiChainArticle();
 	        tmp.setDatas(address(this), datas[i]);
 	  	        
 	        // Save the new value in the register URL2Addresses
